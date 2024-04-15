@@ -14,8 +14,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import axios from "axios";
-
-// const url = "http://localhost:4444/api/users/login"; // Die URL für den Login-Endpunkt
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const login = () => {
   const [email, setEmail] = useState("");
@@ -28,40 +27,27 @@ const login = () => {
   };
 
   const fetchData = async () => {
-    const user = {
-      email: email,
-      password: password,
-    };
-    axios
-      .post("http://localhost:4444/api/users/login", user)
-      .then((response) => {
-        console.log(response);
-        Alert.alert("Login Successfull");
-        setEmail("");
-        setPassword("");
-        router.replace("/home");
-      })
-      .catch((error) => {
-        console.error(error);
-        Alert.alert("Login Failed");
+    console.log("email:", email);
+    console.log("password:", password);
+    try {
+      const response = await fetch("http://localhost:4444/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
       });
+      const data = await response.json();
+      console.log(data);
+      router.replace("/home");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Login Failed");
+    }
   };
-
-  //       {
-  //         email,
-  //         password,
-  //       }
-  //     );
-  //     console.log(response.data);
-  //     // Wenn der Login erfolgreich ist, weiterleiten zur Home-Seite
-  //     if (response.data.success) {
-  //       router.replace("/home"); // Annahme: Die Home-Seite ist "/home"
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-  // Die Login-Funktion aufrufen, um den Login zu initiieren
 
   return (
     <SafeAreaView
@@ -199,5 +185,3 @@ const login = () => {
 };
 
 export default login;
-
-const styles = StyleSheet.create({});

@@ -27,24 +27,25 @@ const login = () => {
   };
 
   const fetchData = async () => {
-    const user = {
-      name: name,
-      email: email,
-      password: password,
-    };
-    axios
-      .post("http://localhost:4444/api/users/signup", user)
-      .then((response) => {
-        console.log(response);
-        Alert.alert("Login Successfull");
-        setEmail("");
-        setPassword("");
-        router.replace("/login");
-      })
-      .catch((error) => {
-        console.error(error);
-        Alert.alert("Login Failed");
+    try {
+      const response = await fetch("http://localhost:4444/api/user/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+        }),
       });
+      const data = await response.json();
+      console.log(data);
+      router.replace("/login");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Login Failed");
+    }
   };
 
   return (
